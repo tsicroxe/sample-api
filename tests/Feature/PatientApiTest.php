@@ -51,10 +51,23 @@ class PatientApiTest extends TestCase
      */
     public function test_making_an_api_get_request_with_invalid_order_by()
     {
-
         $response = $this->getJson('/api/patients?order_by=id_DESCFSD');
 
         $response->assertJsonValidationErrors('order_by');
+    }
+
+        /**
+     * @return void
+     */
+    public function test_making_an_api_get_request_has_pagination()
+    {
+        Appointment::factory(20)->create();
+
+        $response = $this->getJson('/api/appointments?per_page=5&page=2');
+
+        $response
+            ->assertStatus(200)
+            ->assertSee('meta');
     }
 
     /**
@@ -65,5 +78,33 @@ class PatientApiTest extends TestCase
         $response = $this->getJson('/api/patients?load_with=appointments');
 
         $response->assertJsonValidationErrors('load_with');
+    }
+
+        /**
+     * @return void
+     */
+    public function test_making_an_api_get_request_with_valid_load_with()
+    {
+        Appointment::factory(1)->create();
+
+        $response = $this->getJson('/api/patients?load_with[]=appointments');
+
+        $response->assertSeeText('appointments');
+    }
+    
+
+            /**
+     * @return void
+     */
+    public function test_making_an_api_get_request_with_valid_query()
+    {
+        $patient = Patient::factory(1)->create();
+        $name = $patient->pluck('first_name')[0];
+
+        $response = $this->getJson("/api/patients?query=$name, $name");
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonCount(1, 'data');
     }
 }

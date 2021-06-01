@@ -13,6 +13,27 @@ class AppointmentApiTest extends TestCase
 {
     use WithFaker, RefreshDatabase;
 
+
+        /**
+     * @return void
+     */
+    public function test_creating_an_appointment()
+    {
+        $patient = Patient::factory(1)->create();
+        $patient_id = $patient->pluck('id')[0];
+        $data = [
+            "patient_id" => $patient_id,
+            "occurs_at" => "2005-08-15T00:00:00+00:00",
+            "type" => $this->faker->name,
+        ];
+
+        $response = $this->postJson('/api/appointments', $data);
+
+        $response->assertStatus(201)
+            ->assertJson(['appointment' => $data]);
+    }
+
+
     /**
      * @return void
      */

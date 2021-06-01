@@ -62,8 +62,6 @@ class AppointmentController extends Controller
             'type' => 'required|string|max:50'
         ]);
 
-        $validated['occurs_at'] = Carbon::createFromDate($validated['occurs_at'])->toIso8601String();
-
         $appointment = Appointment::create($validated);
 
         return response()->json(['appointment' => $appointment], 201);

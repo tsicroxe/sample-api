@@ -78,8 +78,6 @@ class PatientController extends Controller
             'phone' => 'required|string|between:7,25'
         ]);
 
-        $validated['dob'] = Carbon::createFromDate($validated['dob'])->toIso8601String();
-
         $patient = Patient::create($validated);
 
         return response()->json(['patient' => $patient], 201);
